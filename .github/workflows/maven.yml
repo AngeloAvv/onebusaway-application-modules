@@ -5,7 +5,7 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, development ]
   pull_request:
     branches: [ master ]
 
@@ -24,3 +24,13 @@ jobs:
         run: mvn -U clean install -Ptravis -Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2 -DskipTests=true -Dmaven.javadoc.skip=true -Dvalidate.silent=true -Dlog4j.configuration= -B -V -q
       - name: Test with Maven
         run: mvn test -Dlog4j.configuration=
+      - name: Find and zip artifacts
+        run: |
+          mkdir -p artifacts
+          find . -type f \( -name "onebusaway-*.jar" -o -name "onebusaway-*.war" -o -name "onebusaway-*.zip" \) -exec cp {} artifacts/ \;
+      # TODO: https://github.com/actions/upload-artifact/pull/354
+      - name: Upload zip file
+        uses: initdc/upload-artifact@baac12d9f85834b2f8baa26a08ff97c27cc82cd9
+        with:
+          path: artifacts/*
+          artifact-per-file: true
