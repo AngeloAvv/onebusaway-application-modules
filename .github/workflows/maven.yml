@@ -3,11 +3,7 @@
 
 name: Java CI with Maven
 
-on:
-  push:
-    branches: [ master, development ]
-  pull_request:
-    branches: [ master ]
+on: push
 
 jobs:
   build:
@@ -34,3 +30,10 @@ jobs:
         with:
           path: artifacts/*
           artifact-per-file: true
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: artifacts/*
